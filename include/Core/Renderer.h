@@ -9,8 +9,9 @@ public:
     Renderer();
     ~Renderer();
 
-    void Init();
+    void Init();   
     void Render();
+    void Shutdown(); 
 
 private:
     GLuint VAO, VBO;
