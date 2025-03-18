@@ -2,6 +2,7 @@
 #define GAME_ENGINE_H
 
 #include "Window.h"
+#include "Renderer.h"
 
 class GameEngine {
 public:
@@ -10,10 +11,10 @@ public:
 
     bool Init();
     void Run();
-    void Shutdown();
 
 private:
     Window* window;
+    Renderer* renderer;
 };
 
 #endif // GAME_ENGINE_H

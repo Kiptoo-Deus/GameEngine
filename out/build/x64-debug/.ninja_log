@@ -1,0 +1,14 @@
+# ninja log v5
+37	2208	7640235735822922	CMakeFiles/GameEngine.dir/include/Core/Renderer.cpp.obj	2fe26c46fbc99acd
+9	2565	7640235739877112	CMakeFiles/GameEngine.dir/src/main.cpp.obj	be37ee1d8b6bd90d
+30	3054	7640235744896939	CMakeFiles/GameEngine.dir/include/Core/Shader.cpp.obj	dbfae830364b5d3
+22	3114	7640235745472207	CMakeFiles/GameEngine.dir/include/Core/Window.cpp.obj	bd11770d150096ad
+15	3123	7640235745647535	CMakeFiles/GameEngine.dir/include/Core/GameEngine.cpp.obj	f76f69e7b435492e
+3123	3812	7640235751353279	GameEngine.exe	a0668da459de5749
+121	4085	7640238231904054	CMakeFiles/GameEngine.dir/include/Core/Renderer.cpp.obj	2fe26c46fbc99acd
+106	4490	7640238235902998	CMakeFiles/GameEngine.dir/include/Core/Shader.cpp.obj	dbfae830364b5d3
+36	565	7640238415613034	GameEngine.exe	a0668da459de5749
+27	1604	7640239350701473	CMakeFiles/GameEngine.dir/include/Core/Renderer.cpp.obj	2fe26c46fbc99acd
+1605	1982	7640239352921404	GameEngine.exe	a0668da459de5749
+41	1386	7640240047824999	CMakeFiles/GameEngine.dir/include/Core/Renderer.cpp.obj	2fe26c46fbc99acd
+1388	1774	7640240050145023	GameEngine.exe	a0668da459de5749
