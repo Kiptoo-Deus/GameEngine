@@ -89,15 +89,24 @@ void Renderer::Render() {
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "projection"), 1, GL_FALSE, &projection[0][0]);
 
+    // Static cube (brown)
+    glUniform3f(glGetUniformLocation(shader->GetProgram(), "objectColor"), 0.6f, 0.3f, 0.1f);
     glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "model"), 1, GL_FALSE, &model[0][0]);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
+    // Enemies (green)
+    glUniform3f(glGetUniformLocation(shader->GetProgram(), "objectColor"), 0.0f, 1.0f, 0.0f);
     for (Enemy* enemy : enemies) {
         enemy->Render(shader->GetProgram());
     }
+
+    // Level (gray)
+    glUniform3f(glGetUniformLocation(shader->GetProgram(), "objectColor"), 0.5f, 0.5f, 0.5f);
     level->Render(shader->GetProgram());
+
+    glBindVertexArray(0);
     RenderCrosshair();
 }
 
