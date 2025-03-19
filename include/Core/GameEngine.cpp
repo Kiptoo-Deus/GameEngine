@@ -4,9 +4,10 @@
 GameEngine::GameEngine() {
     window = new Window("FPS Game Engine", 800, 600);
     camera = new Camera();
-    renderer = new Renderer();
+    renderer = new Renderer(this);
     weapon = new Weapon(camera, renderer);
     level = nullptr;
+    health = 100.0f;
 }
 
 GameEngine::~GameEngine() {
@@ -19,20 +20,16 @@ GameEngine::~GameEngine() {
 
 bool GameEngine::Init() {
     if (!window->Init()) return false;
-
     SDL_SetRelativeMouseMode(SDL_TRUE);
     renderer->Init(camera);
-    weapon->Init();
-
     camera->SetLevel(renderer->GetLevel());
-
     enemies.push_back(new Enemy(glm::vec3(2.0f, 0.0f, 2.0f)));
     enemies.push_back(new Enemy(glm::vec3(-2.0f, 0.0f, -2.0f)));
     for (Enemy* enemy : enemies) {
+        enemy->Init(renderer->GetVAO(), renderer->GetLevel()); // Pass VAO
         renderer->AddEnemy(enemy);
-        enemy->Init(renderer->GetVAO(), renderer->GetLevel()); 
     }
-
+    weapon->Init();
     return true;
 }
 
@@ -40,7 +37,7 @@ void GameEngine::Run() {
     Uint32 lastTime = SDL_GetTicks();
     float deltaTime = 0.0f;
 
-    while (true) {
+    while (health > 0) {
         Uint32 currentTime = SDL_GetTicks();
         deltaTime = (currentTime - lastTime) / 1000.0f;
         lastTime = currentTime;
@@ -58,9 +55,8 @@ void GameEngine::Run() {
         camera->ProcessMouse((float)x, (float)y);
         camera->ProcessKeyboard(deltaTime);
 
-        // Update enemies with player position
         for (Enemy* enemy : enemies) {
-            enemy->Update(deltaTime, camera->position);
+            enemy->Update(deltaTime, camera->position, this);
         }
 
         weapon->Update(deltaTime);
@@ -68,4 +64,5 @@ void GameEngine::Run() {
         weapon->Render();
         window->SwapBuffers();
     }
+    std::cout << "Game Over! Player health reached 0." << std::endl;
 }

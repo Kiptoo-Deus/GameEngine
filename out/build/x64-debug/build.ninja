@@ -133,7 +133,7 @@ build GameEngine.exe: CXX_EXECUTABLE_LINKER__GameEngine_Debug CMakeFiles\GameEng
   FLAGS = /DWIN32 /D_WINDOWS /W3 /GR /EHsc /MDd /Zi /Ob0 /Od /RTC1
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = opengl32.lib  SDL2.lib  SDL2main.lib  C:\vcpkg\installed\x64-windows\lib\glew32.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
-  LINK_PATH = -LIBPATH:C:\vcpkg\installed\x64-windows\lib\manual-link   -LIBPATH:C:\vcpkg\installed\x64-windows\lib
+  LINK_PATH = -LIBPATH:C:\vcpkg\installed\x64-windows\lib   -LIBPATH:C:\vcpkg\installed\x64-windows\lib\manual-link
   OBJECT_DIR = CMakeFiles\GameEngine.dir
   POST_BUILD = cmd.exe /C "cd /D C:\Users\JOEL\Documents\GitHub\GameEngine\GameEngine\out\build\x64-debug && "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E copy_if_different C:/vcpkg/installed/x64-windows/bin/SDL2.dll C:/vcpkg/installed/x64-windows/bin/glew32.dll C:/Users/JOEL/Documents/GitHub/GameEngine/GameEngine/out/build/x64-debug"
   PRE_LINK = cd .

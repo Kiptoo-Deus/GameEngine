@@ -1,95 +1,69 @@
 #include "Enemy.h"
+#include "GameEngine.h"
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
 
-Enemy::Enemy(glm::vec3 position) : position(position), VAO(0), alive(true), level(nullptr) {}
+Enemy::Enemy(glm::vec3 position) : position(position), alive(true), level(nullptr), state(State::WALKING), attackTimer(0.0f), VAO(0) {}
 
-void Enemy::Init(GLuint sharedVAO, Level* lvl) {
-    VAO = sharedVAO;
+void Enemy::Init(GLuint vao, Level* lvl) {
+    VAO = vao;
     level = lvl;
 }
 
-void Enemy::Update(float deltaTime, const glm::vec3& playerPos) { 
+void Enemy::Update(float deltaTime, const glm::vec3& playerPos, GameEngine* game) {
     if (!alive) return;
 
-    // Move toward player
+    float distanceToPlayer = glm::distance(playerPos, position);
+    state = (distanceToPlayer < chaseDistance) ? State::RUNNING : State::WALKING;
+    speed = (state == State::RUNNING) ? runSpeed : walkSpeed;
+
     direction = glm::normalize(playerPos - position);
     glm::vec3 newPosition = position + direction * speed * deltaTime;
 
-    if (newPosition.x + SIZE / 2 > 5.0f || newPosition.x - SIZE / 2 < -5.0f) {
-        direction.x = -direction.x;
-        newPosition.x = glm::clamp(newPosition.x, -4.5f, 4.5f);
-    }
-    if (newPosition.z + SIZE / 2 > 5.0f || newPosition.z - SIZE / 2 < -5.0f) {
-        direction.z = -direction.z;
-        newPosition.z = glm::clamp(newPosition.z, -4.5f, 4.5f);
-    }
     if (!checkCollision(newPosition)) {
         position = newPosition;
     }
-    else {
-        direction = -direction;
+
+    attackTimer -= deltaTime;
+    if (distanceToPlayer < attackDistance && attackTimer <= 0.0f) {
+        game->TakeDamage(damage);
+        attackTimer = attackCooldown;
+        std::cout << "Player hit! Health: " << game->GetHealth() << std::endl;
     }
-}
-
-bool Enemy::checkCollision(glm::vec3 newPosition) {
-    glm::vec3 cubeMin(-0.5f, -0.5f, -0.5f);
-    glm::vec3 cubeMax(0.5f, 0.5f, 0.5f);
-    glm::vec3 enemyMin = newPosition - glm::vec3(SIZE / 2);
-    glm::vec3 enemyMax = newPosition + glm::vec3(SIZE / 2);
-
-    if (enemyMin.x < cubeMax.x && enemyMax.x > cubeMin.x &&
-        enemyMin.y < cubeMax.y && enemyMax.y > cubeMin.y &&
-        enemyMin.z < cubeMax.z && enemyMax.z > cubeMin.z) {
-        return true;
-    }
-
-    if (newPosition.y - SIZE / 2 < -0.5f) return true;
-
-    if (level && level->CheckCollision(newPosition, SIZE / 2)) return true;
-
-    return false;
 }
 
 void Enemy::Render(GLuint shaderProgram) {
     if (!alive) return;
-
-    glUseProgram(shaderProgram);
     glm::mat4 model = glm::translate(glm::mat4(1.0f), position);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
-
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
 
-bool Enemy::CheckHit(glm::vec3 shotStart, glm::vec3 shotEnd) {
-    if (!alive) return false;
-
-    glm::vec3 minBounds = position - glm::vec3(SIZE / 2);
-    glm::vec3 maxBounds = position + glm::vec3(SIZE / 2);
-
-    glm::vec3 dir = glm::normalize(shotEnd - shotStart);
-    float tmin = 0.0f;
-    float tmax = glm::distance(shotStart, shotEnd);
-
-    for (int i = 0; i < 3; i++) {
-        if (std::abs(dir[i]) < 0.0001f) {
-            if (shotStart[i] < minBounds[i] || shotStart[i] > maxBounds[i]) return false;
-        }
-        else {
-            float t1 = (minBounds[i] - shotStart[i]) / dir[i];
-            float t2 = (maxBounds[i] - shotStart[i]) / dir[i];
-            if (t1 > t2) std::swap(t1, t2);
-            tmin = std::max(tmin, t1);
-            tmax = std::min(tmax, t2);
-            if (tmin > tmax) return false;
-        }
-    }
-
-    if (tmin <= tmax && tmin >= 0.0f) {
-        alive = false;
-        return true;
-    }
+bool Enemy::checkCollision(const glm::vec3& newPosition) {
+    if (level && level->CheckCollision(newPosition, size)) return true;
     return false;
+}
+
+bool Enemy::CheckHit(const glm::vec3& rayOrigin, const glm::vec3& rayDir) {
+    // Simple bounding box check
+    glm::vec3 min = position - glm::vec3(size);
+    glm::vec3 max = position + glm::vec3(size);
+    float tmin = (min.x - rayOrigin.x) / rayDir.x;
+    float tmax = (max.x - rayOrigin.x) / rayDir.x;
+    if (tmin > tmax) std::swap(tmin, tmax);
+    float tymin = (min.y - rayOrigin.y) / rayDir.y;
+    float tymax = (max.y - rayOrigin.y) / rayDir.y;
+    if (tymin > tymax) std::swap(tymin, tymax);
+    if ((tmin > tymax) || (tymin > tmax)) return false;
+    if (tymin > tmin) tmin = tymin;
+    if (tymax < tmax) tmax = tymax;
+    float tzmin = (min.z - rayOrigin.z) / rayDir.z;
+    float tzmax = (max.z - rayOrigin.z) / rayDir.z;
+    if (tzmin > tzmax) std::swap(tzmin, tzmax);
+    if ((tmin > tzmax) || (tzmin > tmax)) return false;
+    if (tzmin > tmin) tmin = tzmin;
+    if (tmax < 0) return false; // Behind camera
+    alive = false; // Kill enemy on hit
+    return true;
 }

@@ -8,17 +8,17 @@
 class Level {
 public:
     Level();
-    void Init(GLuint sharedVAO);
+    void Init(GLuint vao);
     void Render(GLuint shaderProgram);
-    bool CheckCollision(glm::vec3 position, float radius);
+    bool CheckCollision(const glm::vec3& position, float size = 0.5f);
 
 private:
-    GLuint VAO;
     struct Wall {
         glm::vec3 position;
-        glm::vec3 scale; // For flat walls
+        glm::vec3 scale;
     };
     std::vector<Wall> walls;
+    GLuint VAO; // Shared cube VAO
 };
 
 #endif
