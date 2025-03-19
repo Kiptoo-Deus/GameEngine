@@ -1,25 +1,67 @@
 #include "Renderer.h"
 #include <iostream>
 
+#include "Renderer.h"
+#include <iostream>
 
+// Complete cube vertices (position + color)
 float vertices[] = {
-    -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+    // Front face
+    -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Bottom-left
+     0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // Bottom-right
+     0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, // Top-right
+     0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f, // Top-right
+    -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f, // Top-left
+    -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Bottom-left
+
+    // Back face
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+
+    // Left face
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+
+    // Right face
+     0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
      0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
      0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f, 1.0f, 1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+
+     // Top face
+     -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+      0.5f,  0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+      0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+      0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+     -0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 1.0f,
+     -0.5f,  0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+
+     // Bottom face
+     -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+      0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+      0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+      0.5f, -0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
+     -0.5f, -0.5f,  0.5f, 1.0f, 1.0f, 1.0f,
+     -0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f
 };
 
 Renderer::Renderer() : VAO(0), VBO(0), shader(nullptr), camera(nullptr) {}
-
-Renderer::~Renderer() {
-    Shutdown();
-}
 
 void Renderer::Init(Camera* cam) {
     camera = cam;
     shader = new Shader(
         "C:/Users/JOEL/Documents/GitHub/GameEngine/GameEngine/shaders/vertex_shader.glsl",
-        "C:/Users/JOEL/Documents/GitHub/GameEngine/GameEngine/shaders/fragment_shader.glsl" 
+        "C:/Users/JOEL/Documents/GitHub/GameEngine/GameEngine/shaders/fragment_shader.glsl"
     );
 
     glGenVertexArrays(1, &VAO);
@@ -34,7 +76,7 @@ void Renderer::Init(Camera* cam) {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glEnable(GL_DEPTH_TEST); // Enable depth testing for 3D
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::Render() {
@@ -43,19 +85,23 @@ void Renderer::Render() {
 
     shader->Use();
 
-    // Set up matrices
     glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = camera->GetViewMatrix();
-    glm::mat4 projection = camera->GetProjectionMatrix(800.0f, 600.0f); // Hardcoded for now
+    glm::mat4 projection = camera->GetProjectionMatrix(800.0f, 600.0f);
 
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "model"), 1, GL_FALSE, &model[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "projection"), 1, GL_FALSE, &projection[0][0]);
 
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices for a cube
+    glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices for a complete cube
     glBindVertexArray(0);
 }
+
+Renderer::~Renderer() {
+    Shutdown();
+}
+
 
 void Renderer::Shutdown() {
     glDeleteVertexArrays(1, &VAO);
