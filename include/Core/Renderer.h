@@ -21,7 +21,7 @@ public:
     void AddEnemy(Enemy* enemy);
     Level* GetLevel() const { return level; }
     const std::vector<Enemy*>& GetEnemies() const { return enemies; }
-    GLuint GetVAO() const { return VAO; } // Add this
+    GLuint GetVAO() const { return VAO; } 
 
 private:
     GLuint VAO, VBO;

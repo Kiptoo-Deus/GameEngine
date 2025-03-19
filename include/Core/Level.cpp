@@ -27,7 +27,7 @@ void Level::Render(GLuint shaderProgram) {
     glBindVertexArray(0);
 }
 
-bool Level::CheckCollision(const glm::vec3& position, float radius) { // Match header
+bool Level::CheckCollision(const glm::vec3& position, float radius) { 
     // Check floor (ensure player doesn’t fall through)
     if (position.y - radius < -0.5f) return true;
 

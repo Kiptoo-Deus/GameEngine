@@ -7,8 +7,9 @@ out vec3 Color;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 objectColor; // Add this
 
 void main() {
     gl_Position = projection * view * model * vec4(aPos, 1.0);
-    Color = aColor;
+    Color = aColor * objectColor; // Multiply vertex color with uniform
 }

@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
 #include "GameEngine.h"
-// Cube vertices with position and color (no texture coords or normals)
 float vertices[] = {
     // Front face
     -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Bottom-left (red)

@@ -18,7 +18,7 @@ private:
         glm::vec3 scale;
     };
     std::vector<Wall> walls;
-    GLuint VAO; // Shared cube VAO
+    GLuint VAO; 
 };
 
 #endif
