@@ -5,14 +5,32 @@ Camera::Camera(glm::vec3 position) : position(position) {
     updateCameraVectors();
 }
 
+bool Camera::checkCollision(glm::vec3 newPosition) {
+    // Cube AABB: (-0.5, -0.5, -0.5) to (0.5, 0.5, 0.5)
+    glm::vec3 cubeMin(-0.5f, -0.5f, -0.5f);
+    glm::vec3 cubeMax(0.5f, 0.5f, 0.5f);
+
+    // Check if player's sphere intersects cube's AABB
+    glm::vec3 closestPoint = glm::clamp(newPosition, cubeMin, cubeMax);
+    float distance = glm::distance(newPosition, closestPoint);
+
+    return distance < playerRadius;
+}
 void Camera::ProcessKeyboard(float deltaTime) {
     float velocity = movementSpeed * deltaTime;
     const Uint8* state = SDL_GetKeyboardState(NULL);
 
-    if (state[SDL_SCANCODE_W]) position += front * velocity;
-    if (state[SDL_SCANCODE_S]) position -= front * velocity;
-    if (state[SDL_SCANCODE_A]) position -= right * velocity;
-    if (state[SDL_SCANCODE_D]) position += right * velocity;
+    glm::vec3 newPosition = position;
+
+    if (state[SDL_SCANCODE_W]) newPosition += front * velocity;
+    if (state[SDL_SCANCODE_S]) newPosition -= front * velocity;
+    if (state[SDL_SCANCODE_A]) newPosition -= right * velocity;
+    if (state[SDL_SCANCODE_D]) newPosition += right * velocity;
+
+    // Only update position if no collision
+    if (!checkCollision(newPosition)) {
+        position = newPosition;
+    }
 }
 
 void Camera::ProcessMouse(float xoffset, float yoffset) {
@@ -22,7 +40,6 @@ void Camera::ProcessMouse(float xoffset, float yoffset) {
     yaw += xoffset;
     pitch -= yoffset;
 
-    // Constrain pitch
     if (pitch > 89.0f) pitch = 89.0f;
     if (pitch < -89.0f) pitch = -89.0f;
 

@@ -13,7 +13,7 @@ public:
     void Init(Camera* cam);
     void Render();
     void Shutdown();
-
+    void RenderCrosshair();
 private:
     GLuint VAO, VBO;
     Shader* shader;

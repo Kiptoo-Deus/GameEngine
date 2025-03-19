@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "Renderer.h"
 #include "Camera.h"
+#include "Weapon.h"
 
 class GameEngine {
 public:
@@ -17,6 +18,7 @@ private:
     Window* window;
     Renderer* renderer;
     Camera* camera;
+    Weapon* weapon;
 };
 
 #endif

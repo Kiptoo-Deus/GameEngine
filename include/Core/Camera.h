@@ -15,18 +15,21 @@ public:
     glm::mat4 GetProjectionMatrix(float width, float height);
 
     glm::vec3 position;
-private:
     glm::vec3 front;
     glm::vec3 up;
     glm::vec3 right;
+private:
+   
 
     float yaw = -90.0f;
     float pitch = 0.0f;
     float movementSpeed = 2.5f;
     float mouseSensitivity = 0.1f;
     float fov = 45.0f;
+    float playerRadius = 0.2f; // Small radius for player collision
 
     void updateCameraVectors();
+    bool checkCollision(glm::vec3 newPosition);
 };
 
 #endif

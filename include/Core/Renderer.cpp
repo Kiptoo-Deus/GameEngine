@@ -96,6 +96,26 @@ void Renderer::Render() {
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices for a complete cube
     glBindVertexArray(0);
+
+    RenderCrosshair();
+}
+void Renderer::RenderCrosshair() {
+    glUseProgram(0); // Disable shader for immediate mode
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 800, 0, 600, -1, 1); // 2D ortho projection
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glColor3f(1.0f, 1.0f, 1.0f); // White crosshair
+    glBegin(GL_LINES);
+    // Horizontal line
+    glVertex2f(390.0f, 300.0f);
+    glVertex2f(410.0f, 300.0f);
+    // Vertical line
+    glVertex2f(400.0f, 290.0f);
+    glVertex2f(400.0f, 310.0f);
+    glEnd();
 }
 
 Renderer::~Renderer() {
