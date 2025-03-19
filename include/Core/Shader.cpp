@@ -63,4 +63,3 @@ GLuint Shader::LoadShader(const std::string& path, GLenum type) {
 
     return shader;
 }
-

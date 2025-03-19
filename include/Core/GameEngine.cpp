@@ -2,31 +2,43 @@
 #include <iostream>
 
 GameEngine::GameEngine() {
-    window = new Window("Game Engine 3D", 800, 600);
+    window = new Window("FPS Game Engine", 800, 600);
+    camera = new Camera();
     renderer = new Renderer();
 }
 
 GameEngine::~GameEngine() {
     delete renderer;
+    delete camera;
     delete window;
 }
 
 bool GameEngine::Init() {
-    std::cout << "Initializing Game Engine..." << std::endl;
-
     if (!window->Init()) {
         return false;
     }
 
-    renderer->Init();
+    SDL_SetRelativeMouseMode(SDL_TRUE); // Lock mouse
+    renderer->Init(camera);
     return true;
 }
 
 void GameEngine::Run() {
-    std::cout << "Running Game Engine..." << std::endl;
+    Uint32 lastTime = SDL_GetTicks();
+    float deltaTime = 0.0f;
 
     while (true) {
+        Uint32 currentTime = SDL_GetTicks();
+        deltaTime = (currentTime - lastTime) / 1000.0f;
+        lastTime = currentTime;
+
         window->PollEvents();
+
+        // Mouse movement
+        int x, y;
+        SDL_GetRelativeMouseState(&x, &y);
+        camera->ProcessMouse((float)x, (float)y);
+        camera->ProcessKeyboard(deltaTime);
 
         renderer->Render();
         window->SwapBuffers();

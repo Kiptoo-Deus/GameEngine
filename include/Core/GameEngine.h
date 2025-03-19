@@ -3,6 +3,7 @@
 
 #include "Window.h"
 #include "Renderer.h"
+#include "Camera.h"
 
 class GameEngine {
 public:
@@ -15,6 +16,7 @@ public:
 private:
     Window* window;
     Renderer* renderer;
+    Camera* camera;
 };
 
-#endif // GAME_ENGINE_H
+#endif
