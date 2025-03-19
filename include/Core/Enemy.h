@@ -9,7 +9,7 @@ class Enemy {
 public:
     Enemy(glm::vec3 position);
     void Init(GLuint sharedVAO, Level* lvl = nullptr);
-    void Update(float deltaTime);
+    void Update(float deltaTime, const glm::vec3& playerPos);
     void Render(GLuint shaderProgram);
     bool CheckHit(glm::vec3 shotStart, glm::vec3 shotEnd);
     bool IsAlive() const { return alive; }

@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include <iostream>
 
+
 float vertices[] = {
     // Front face
     -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Bottom-left

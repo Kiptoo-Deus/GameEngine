@@ -58,9 +58,9 @@ void GameEngine::Run() {
         camera->ProcessMouse((float)x, (float)y);
         camera->ProcessKeyboard(deltaTime);
 
-        // Update enemies
+        // Update enemies with player position
         for (Enemy* enemy : enemies) {
-            enemy->Update(deltaTime);
+            enemy->Update(deltaTime, camera->position);
         }
 
         weapon->Update(deltaTime);
