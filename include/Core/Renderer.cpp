@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
 
-// Complete cube vertices (position + color) for a 1x1x1 cube
 float vertices[] = {
     // Front face
     -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Bottom-left
@@ -81,8 +80,10 @@ void Renderer::Init(Camera* cam) {
     glBindVertexArray(0);
 
     glEnable(GL_DEPTH_TEST);
-}
 
+    level = new Level();
+    level->Init(VAO);
+}
 void Renderer::Render() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -94,17 +95,34 @@ void Renderer::Render() {
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "projection"), 1, GL_FALSE, &projection[0][0]);
 
+    // Render static cube at origin
     glm::mat4 model = glm::mat4(1.0f);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "model"), 1, GL_FALSE, &model[0][0]);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
+    // Render enemies
     for (Enemy* enemy : enemies) {
         enemy->Render(shader->GetProgram());
     }
 
+    // Render level
+    level->Render(shader->GetProgram());
+
     glBindVertexArray(0);
     RenderCrosshair();
+}
+
+void Renderer::AddEnemy(Enemy* enemy) {
+    enemies.push_back(enemy);
+    enemy->Init(VAO);
+}
+
+void Renderer::Shutdown() {
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    delete shader;
+    delete level;
 }
 
 void Renderer::RenderCrosshair() {
@@ -123,14 +141,5 @@ void Renderer::RenderCrosshair() {
     glVertex2f(400.0f, 310.0f);
     glEnd();
 }
-void Renderer::AddEnemy(Enemy* enemy) {
-    enemies.push_back(enemy);
-    enemy->Init(VAO);
-}
 
-void Renderer::Shutdown() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    delete shader;
-}
 

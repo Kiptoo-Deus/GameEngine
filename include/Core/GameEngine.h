@@ -13,7 +13,7 @@ public:
 
     bool Init();
     void Run();
-
+    Level* level;
 private:
     Window* window;
     Renderer* renderer;

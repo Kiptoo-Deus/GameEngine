@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Enemy.h"
+#include "Level.h"
 #include <vector>
 
 class Renderer {
@@ -17,13 +18,15 @@ public:
     void RenderCrosshair();
     void Shutdown();
     void AddEnemy(Enemy* enemy);
-    GLuint GetVAO() const { return VAO; } // Inline definition here
-    std::vector<Enemy*> enemies;
+    GLuint GetVAO() const { return VAO; }
+    Level* GetLevel() const { return level; }
+    const std::vector<Enemy*>& GetEnemies() const { return enemies; }
 private:
     GLuint VAO, VBO;
     Shader* shader;
     Camera* camera;
-    
+    std::vector<Enemy*> enemies;
+    Level* level;
 };
 
 #endif

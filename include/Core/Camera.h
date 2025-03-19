@@ -4,11 +4,11 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include "Level.h"
 class Camera {
 public:
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f));
-
+    void SetLevel(Level* lvl) { level = lvl; }
     void ProcessKeyboard(float deltaTime);
     void ProcessMouse(float xoffset, float yoffset);
     glm::mat4 GetViewMatrix();
@@ -19,7 +19,7 @@ public:
     glm::vec3 up;
     glm::vec3 right;
 private:
-   
+    Level* level;
 
     float yaw = -90.0f;
     float pitch = 0.0f;

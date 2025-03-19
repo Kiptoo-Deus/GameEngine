@@ -88,7 +88,7 @@ void Weapon::Shoot() {
         shotStart = camera->position;
         shotEnd = camera->position + camera->front * 10.0f;
 
-        for (Enemy* enemy : renderer->enemies) {
+        for (Enemy* enemy : renderer->GetEnemies()) { 
             if (enemy->CheckHit(shotStart, shotEnd)) {
                 std::cout << "Enemy hit!\n";
             }

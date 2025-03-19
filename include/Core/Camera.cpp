@@ -1,20 +1,19 @@
 #include "Camera.h"
 #include <SDL2/SDL.h>
 
-Camera::Camera(glm::vec3 position) : position(position) {
+Camera::Camera(glm::vec3 position) : position(position), level(nullptr) {
     updateCameraVectors();
 }
-
 bool Camera::checkCollision(glm::vec3 newPosition) {
-    // Cube AABB: (-0.5, -0.5, -0.5) to (0.5, 0.5, 0.5)
     glm::vec3 cubeMin(-0.5f, -0.5f, -0.5f);
     glm::vec3 cubeMax(0.5f, 0.5f, 0.5f);
-
-    // Check if player's sphere intersects cube's AABB
     glm::vec3 closestPoint = glm::clamp(newPosition, cubeMin, cubeMax);
     float distance = glm::distance(newPosition, closestPoint);
+    if (distance < playerRadius) return true;
 
-    return distance < playerRadius;
+    if (level && level->CheckCollision(newPosition, playerRadius)) return true;
+
+    return false;
 }
 void Camera::ProcessKeyboard(float deltaTime) {
     float velocity = movementSpeed * deltaTime;
