@@ -6,7 +6,7 @@ GameEngine::GameEngine() {
     camera = new Camera();
     renderer = new Renderer();
     weapon = new Weapon(camera, renderer);
-    level = nullptr; 
+    level = nullptr;
 }
 
 GameEngine::~GameEngine() {
@@ -15,7 +15,6 @@ GameEngine::~GameEngine() {
     delete renderer;
     delete camera;
     delete window;
-    delete renderer; 
 }
 
 bool GameEngine::Init() {
@@ -27,11 +26,11 @@ bool GameEngine::Init() {
 
     camera->SetLevel(renderer->GetLevel());
 
-    // Add enemies
     enemies.push_back(new Enemy(glm::vec3(2.0f, 0.0f, 2.0f)));
     enemies.push_back(new Enemy(glm::vec3(-2.0f, 0.0f, -2.0f)));
     for (Enemy* enemy : enemies) {
         renderer->AddEnemy(enemy);
+        enemy->Init(renderer->GetVAO(), renderer->GetLevel()); 
     }
 
     return true;
@@ -58,6 +57,11 @@ void GameEngine::Run() {
         SDL_GetRelativeMouseState(&x, &y);
         camera->ProcessMouse((float)x, (float)y);
         camera->ProcessKeyboard(deltaTime);
+
+        // Update enemies
+        for (Enemy* enemy : enemies) {
+            enemy->Update(deltaTime);
+        }
 
         weapon->Update(deltaTime);
         renderer->Render();

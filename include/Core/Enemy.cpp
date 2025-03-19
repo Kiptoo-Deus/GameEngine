@@ -1,10 +1,55 @@
 #include "Enemy.h"
 #include <iostream>
+#include <glm/gtc/matrix_transform.hpp> 
 
-Enemy::Enemy(glm::vec3 position) : position(position), VAO(0), alive(true) {}
+Enemy::Enemy(glm::vec3 position) : position(position), VAO(0), alive(true), level(nullptr) {}
 
-void Enemy::Init(GLuint sharedVAO) {
-    VAO = sharedVAO; // Share vertex data with main cube
+void Enemy::Init(GLuint sharedVAO, Level* lvl) {
+    VAO = sharedVAO;
+    level = lvl;
+}
+
+void Enemy::Update(float deltaTime) {
+    if (!alive) return;
+
+    glm::vec3 newPosition = position + direction * speed * deltaTime;
+
+    if (newPosition.x + SIZE / 2 > 5.0f || newPosition.x - SIZE / 2 < -5.0f) {
+        direction.x = -direction.x;
+        newPosition.x = glm::clamp(newPosition.x, -4.5f, 4.5f);
+    }
+    if (newPosition.z + SIZE / 2 > 5.0f || newPosition.z - SIZE / 2 < -5.0f) {
+        direction.z = -direction.z;
+        newPosition.z = glm::clamp(newPosition.z, -4.5f, 4.5f);
+    }
+    if (!checkCollision(newPosition)) {
+        position = newPosition;
+    }
+    else {
+        direction = -direction;
+    }
+}
+
+bool Enemy::checkCollision(glm::vec3 newPosition) {
+
+    glm::vec3 cubeMin(-0.5f, -0.5f, -0.5f);
+    glm::vec3 cubeMax(0.5f, 0.5f, 0.5f);
+    glm::vec3 enemyMin = newPosition - glm::vec3(SIZE / 2);
+    glm::vec3 enemyMax = newPosition + glm::vec3(SIZE / 2);
+
+    if (enemyMin.x < cubeMax.x && enemyMax.x > cubeMin.x &&
+        enemyMin.y < cubeMax.y && enemyMax.y > cubeMin.y &&
+        enemyMin.z < cubeMax.z && enemyMax.z > cubeMin.z) {
+        return true;
+    }
+
+
+    if (newPosition.y - SIZE / 2 < -0.5f) return true;
+
+    // Check level walls if available
+    if (level && level->CheckCollision(newPosition, SIZE / 2)) return true;
+
+    return false;
 }
 
 void Enemy::Render(GLuint shaderProgram) {
@@ -22,7 +67,6 @@ void Enemy::Render(GLuint shaderProgram) {
 bool Enemy::CheckHit(glm::vec3 shotStart, glm::vec3 shotEnd) {
     if (!alive) return false;
 
-    // Simple ray-AABB intersection
     glm::vec3 minBounds = position - glm::vec3(SIZE / 2);
     glm::vec3 maxBounds = position + glm::vec3(SIZE / 2);
 
