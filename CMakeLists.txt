@@ -4,7 +4,7 @@ project(GameEngine)
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED True) 
 
 # Specify the vcpkg toolchain file (for automatic package finding)
 set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
@@ -30,7 +30,7 @@ include_directories(C:/glad/include/glad)
 link_directories(C:/vcpkg/installed/x64-windows/lib)
 include_directories(C:/glad/src)
 # Add executable
-add_executable(GameEngine "src/main.cpp" "include/Core/GameEngine.cpp" "include/Core/GameEngine.h" "include/Core/Window.h" "include/Core/Window.cpp" "include/Core/Shader.h" "include/Core/Shader.cpp" "include/Core/Renderer.h" "include/Core/Renderer.cpp" "include/Core/Camera.h" "include/Core/Camera.cpp" "include/Core/Weapon.h" "include/Core/Weapon.cpp")
+add_executable(GameEngine "src/main.cpp" "include/Core/GameEngine.cpp" "include/Core/GameEngine.h" "include/Core/Window.h" "include/Core/Window.cpp" "include/Core/Shader.h" "include/Core/Shader.cpp" "include/Core/Renderer.h" "include/Core/Renderer.cpp" "include/Core/Camera.h" "include/Core/Camera.cpp" "include/Core/Weapon.h" "include/Core/Weapon.cpp" "include/Core/Enemy.h" "include/Core/Enemy.cpp")
 
 # Link libraries (include GLEW and SDL2 manually)
 target_link_libraries(GameEngine OpenGL::GL SDL2.lib SDL2main.lib ${GLEW_LIBRARIES})

@@ -19,6 +19,7 @@ private:
     Renderer* renderer;
     Camera* camera;
     Weapon* weapon;
+    std::vector<Enemy*> enemies;
 };
 
 #endif

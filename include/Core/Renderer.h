@@ -4,6 +4,8 @@
 #include <GL/glew.h>
 #include "Shader.h"
 #include "Camera.h"
+#include "Enemy.h"
+#include <vector>
 
 class Renderer {
 public:
@@ -12,12 +14,16 @@ public:
 
     void Init(Camera* cam);
     void Render();
-    void Shutdown();
     void RenderCrosshair();
+    void Shutdown();
+    void AddEnemy(Enemy* enemy);
+    GLuint GetVAO() const { return VAO; } // Inline definition here
+    std::vector<Enemy*> enemies;
 private:
     GLuint VAO, VBO;
     Shader* shader;
     Camera* camera;
+    
 };
 
 #endif

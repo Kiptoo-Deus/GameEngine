@@ -1,10 +1,7 @@
 #include "Renderer.h"
 #include <iostream>
 
-#include "Renderer.h"
-#include <iostream>
-
-// Complete cube vertices (position + color)
+// Complete cube vertices (position + color) for a 1x1x1 cube
 float vertices[] = {
     // Front face
     -0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f, // Bottom-left
@@ -57,6 +54,10 @@ float vertices[] = {
 
 Renderer::Renderer() : VAO(0), VBO(0), shader(nullptr), camera(nullptr) {}
 
+Renderer::~Renderer() {
+    Shutdown();
+}
+
 void Renderer::Init(Camera* cam) {
     camera = cam;
     shader = new Shader(
@@ -76,6 +77,9 @@ void Renderer::Init(Camera* cam) {
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
     glEnable(GL_DEPTH_TEST);
 }
 
@@ -84,47 +88,49 @@ void Renderer::Render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shader->Use();
-
-    glm::mat4 model = glm::mat4(1.0f);
     glm::mat4 view = camera->GetViewMatrix();
     glm::mat4 projection = camera->GetProjectionMatrix(800.0f, 600.0f);
 
-    glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "model"), 1, GL_FALSE, &model[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "view"), 1, GL_FALSE, &view[0][0]);
     glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "projection"), 1, GL_FALSE, &projection[0][0]);
 
+    glm::mat4 model = glm::mat4(1.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shader->GetProgram(), "model"), 1, GL_FALSE, &model[0][0]);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices for a complete cube
-    glBindVertexArray(0);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
+    for (Enemy* enemy : enemies) {
+        enemy->Render(shader->GetProgram());
+    }
+
+    glBindVertexArray(0);
     RenderCrosshair();
 }
+
 void Renderer::RenderCrosshair() {
-    glUseProgram(0); // Disable shader for immediate mode
+    glUseProgram(0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, 800, 0, 600, -1, 1); // 2D ortho projection
+    glOrtho(0, 800, 0, 600, -1, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glColor3f(1.0f, 1.0f, 1.0f); // White crosshair
+    glColor3f(1.0f, 1.0f, 1.0f);
     glBegin(GL_LINES);
-    // Horizontal line
     glVertex2f(390.0f, 300.0f);
     glVertex2f(410.0f, 300.0f);
-    // Vertical line
     glVertex2f(400.0f, 290.0f);
     glVertex2f(400.0f, 310.0f);
     glEnd();
 }
-
-Renderer::~Renderer() {
-    Shutdown();
+void Renderer::AddEnemy(Enemy* enemy) {
+    enemies.push_back(enemy);
+    enemy->Init(VAO);
 }
-
 
 void Renderer::Shutdown() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     delete shader;
 }
+

@@ -5,16 +5,18 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 #include "Camera.h"
+#include "Renderer.h" 
 
 class Weapon {
 public:
-    Weapon(Camera* cam);
+    Weapon(Camera* cam, Renderer* renderer); 
     void Init();
     void Update(float deltaTime);
     void Render();
     void Shoot();
 
 private:
+    Renderer* renderer; 
     Camera* camera;
     Shader* lineShader;
     GLuint lineVAO, lineVBO;

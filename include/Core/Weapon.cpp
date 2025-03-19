@@ -1,17 +1,17 @@
 #include "Weapon.h"
+#include "Enemy.h" 
 #include <iostream>
 
-Weapon::Weapon(Camera* cam) : camera(cam), lineShader(nullptr), lineVAO(0), lineVBO(0),
-isShooting(false), shotTimer(0.0f) {}
+Weapon::Weapon(Camera* cam, Renderer* renderer)
+    : camera(cam), renderer(renderer), lineShader(nullptr),
+    lineVAO(0), lineVBO(0), isShooting(false), shotTimer(0.0f) {}
 
 void Weapon::Init() {
-    // Simple shader for drawing lines
     lineShader = new Shader(
         "C:/Users/JOEL/Documents/GitHub/GameEngine/GameEngine/shaders/line_vertex.glsl",
         "C:/Users/JOEL/Documents/GitHub/GameEngine/GameEngine/shaders/line_fragment.glsl"
     );
 
-    // Check if shader program linked successfully
     GLint success;
     glGetProgramiv(lineShader->GetProgram(), GL_LINK_STATUS, &success);
     if (!success) {
@@ -23,10 +23,9 @@ void Weapon::Init() {
         std::cout << "Line shader program linked successfully" << std::endl;
     }
 
-    // Line vertices (will be updated dynamically)
     float lineVertices[] = {
-        0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // Start
-        0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f  // End
+        0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f
     };
 
     glGenVertexArrays(1, &lineVAO);
@@ -59,7 +58,7 @@ void Weapon::Render() {
         std::cout << "Rendering shot, timer: " << shotTimer << std::endl;
         lineShader->Use();
 
-        glm::mat4 model = glm::mat4(1.0f); // Add model matrix for consistency
+        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = camera->GetViewMatrix();
         glm::mat4 projection = camera->GetProjectionMatrix(800.0f, 600.0f);
 
@@ -75,9 +74,9 @@ void Weapon::Render() {
         glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(lineVertices), lineVertices);
 
-        glDisable(GL_DEPTH_TEST); // Disable depth test for the line
+        glDisable(GL_DEPTH_TEST);
         glDrawArrays(GL_LINES, 0, 2);
-        glEnable(GL_DEPTH_TEST); // Re-enable depth test for other rendering
+        glEnable(GL_DEPTH_TEST);
         glBindVertexArray(0);
     }
 }
@@ -88,7 +87,11 @@ void Weapon::Shoot() {
         shotTimer = 0.2f;
         shotStart = camera->position;
         shotEnd = camera->position + camera->front * 10.0f;
-        std::cout << "Shooting! Start: (" << shotStart.x << ", " << shotStart.y << ", " << shotStart.z
-            << ") End: (" << shotEnd.x << ", " << shotEnd.y << ", " << shotEnd.z << ")" << std::endl;
+
+        for (Enemy* enemy : renderer->enemies) {
+            if (enemy->CheckHit(shotStart, shotEnd)) {
+                std::cout << "Enemy hit!\n";
+            }
+        }
     }
 }
